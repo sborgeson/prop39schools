@@ -168,12 +168,13 @@ def intervalsToCSV(dataDoc, csvFile):
 
 if __name__ == '__main__':
     skipExisting = True
-    path = 'sample_data'
-    if len(sys.argv) > 1:
+    path = 'sample_data'  # relative path to data directory
+    if len(sys.argv) > 1: # allow for command line override of path
         path = sys.argv[1]
 
     print 'Converting all sample data from %s' % path
     potentialFiles = [os.path.join(path, f) for f in os.listdir(path)]
+    # data files are considered all xml files.
     dataFiles = [f for f in potentialFiles if os.path.isfile(f) and f.lower().endswith(".xml")]
     n = len(dataFiles)
     for (i,dataFile) in enumerate(dataFiles):
