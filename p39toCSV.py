@@ -40,7 +40,8 @@ If there is solar, EnergyDelivered is from the grid and EnergyRecieved is from t
         raise ae
 
 def getSchoolMeta(node, ns):
-    schoolMetaConf = [('//uti:Customer_CustomerName', 'customer_name'),
+    schoolMetaConf = [('//uti:UtilitySender', 'utility'),
+                      ('//uti:Customer_CustomerName', 'customer_name'),
                       ('//uti:Customer_City', 'customer_city'),
                       ('//uti:Customer_ZipPlus4', 'customer_zip'),
                       ('//uti:Customer_AccountNumber', 'customer_account'),
@@ -131,6 +132,11 @@ def intervalsToCSV(dataDoc, csvFile):
     tmpFile = csvFile + '.tmp'
     with open(tmpFile, 'wb') as csvOut:
 
+        csvOut.write('%s,%s,%s,%s\n' % ('agreement',
+                                        'start',
+                                        ','.join(['d' + str(i+1) for i in range(100)]),
+                                        ','.join(['r' + str(i+1) for i in range(100)])))
+
         for account in root.findall('.//uti:ElectricityIntervalData', ns):
             days = account.findall('.//uti:IntervalBlockDay', ns)
             if len(days) > 0:
@@ -169,37 +175,49 @@ def intervalsToCSV(dataDoc, csvFile):
 if __name__ == '__main__':
     skipExisting = True
     path = 'sample_data'  # relative path to data directory
+    output_path = 'csv'   # relative path to output directory
     if len(sys.argv) > 1: # allow for command line override of path
         path = sys.argv[1]
+    if len(sys.argv) > 2: # allow for command line override of output path
+        output_path = sys.argv[2]
 
     print 'Converting all sample data from %s' % path
-    potentialFiles = [os.path.join(path, f) for f in os.listdir(path)]
-    # data files are considered all xml files.
-    dataFiles = [f for f in potentialFiles if os.path.isfile(f) and f.lower().endswith(".xml")]
-    n = len(dataFiles)
-    for (i,dataFile) in enumerate(dataFiles):
-        print '%s (%d/%d)' % (dataFile,i+1,n)
-        csvIntervalFile = dataFile + '_INTERVAL.csv'
-        csvBillFile = dataFile + '_BILL.csv'
-        dataDoc = None
-        # dump metadata
 
-        # dump billing data
-        if os.path.exists(csvBillFile) and skipExisting:
-            print '%s already exists. Skipping conversion.' % csvBillFile
-        else:
-            if dataDoc is None: dataDoc = loadDoc(dataFile)
-            billsToCSV(dataDoc, csvBillFile)
+    for root, dirs, files in os.walk(path):
+    
+        # replicate directory structure under output_path directory
+        for d in dirs:
+            out_d = os.path.join(output_path, os.path.relpath(root, path), d)
+            if not os.path.exists(out_d):
+                os.makedirs(out_d)
 
-        # dump intervals
-        if os.path.exists(csvIntervalFile) and skipExisting:
-            print '%s already exists. Skipping conversion.' % csvIntervalFile
-        else:
-            dataDoc = loadDoc(dataFile)
-            intervalsToCSV(dataDoc, csvIntervalFile)
-
-    #dataFile = '45700116097703_20142015_PacificGasElectric_ELECTRIC_20151223.xml'
-
+        potentialFiles = [os.path.join(root, f) for f in os.listdir(root)]
+        # data files are considered all xml files.
+        dataFiles = [f for f in potentialFiles if os.path.isfile(f) and f.lower().endswith(".xml")]
+        n = len(dataFiles)
+        for (i,dataFile) in enumerate(dataFiles):
+            print '%s (%d/%d)' % (dataFile,i+1,n)
+            outputFile = os.path.join(output_path, os.path.relpath(dataFile, path)) 
+            csvIntervalFile = outputFile + '_INTERVAL.csv'
+            csvBillFile = outputFile + '_BILL.csv'
+            dataDoc = None
+            # dump metadata
+    
+            # dump billing data
+            if os.path.exists(csvBillFile) and skipExisting:
+                print '%s already exists. Skipping conversion.' % csvBillFile
+            else:
+                if dataDoc is None: dataDoc = loadDoc(dataFile)
+                billsToCSV(dataDoc, csvBillFile)
+    
+            # dump intervals
+            if os.path.exists(csvIntervalFile) and skipExisting:
+                print '%s already exists. Skipping conversion.' % csvIntervalFile
+            else:
+                dataDoc = loadDoc(dataFile)
+                intervalsToCSV(dataDoc, csvIntervalFile)
+    
+        #dataFile = '45700116097703_20142015_PacificGasElectric_ELECTRIC_20151223.xml'
 
 
 
