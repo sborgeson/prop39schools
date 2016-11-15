@@ -176,8 +176,8 @@ def intervalsToCSV(dataDoc, csvFile):
 
 if __name__ == '__main__':
     skipExisting = True
-    path = '/Volumes/LaCie 1/prop39/IOU_Data/PGE'  # relative path to data directory
-    output_path = '/Volumes/LaCie 1/prop39/PGE_csv'   # relative path to output directory
+    path = 'sample_data'  # relative path to data directory
+    output_path = 'csv'   # relative path to output directory
     if len(sys.argv) > 1: # allow for command line override of path
         path = sys.argv[1]
     if len(sys.argv) > 2: # allow for command line override of output path
