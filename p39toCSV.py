@@ -140,31 +140,33 @@ def intervalsToCSV(dataDoc, csvFile):
         for account in root.findall('.//uti:ElectricityIntervalData', ns):
             days = account.findall('.//uti:IntervalBlockDay', ns)
             if len(days) > 0:
-                agreement = account.find('./uti:ElectricityInterval_AgreementIdentifier', ns).text
-                print 'Agreement: %s' % agreement
-                print '%s days of data' % len(days)
-                for day in days:
-                    nobs = day.find('./uti:IntervalReadingLength_IntervalLength', ns).text
-                    start = day.find('./uti:IntervalBlockDay_StartTime', ns).text
-                    obs = day.findall('.//uti:IntervalReadings', ns)
-
-                    readings = [getUsage(ob, ns) for ob in obs]
-                    if len(readings) == 96:
-                        readings.extend([('', '')] * 4)
-                    if len(readings) == 92:
-                        readings.extend([('', '')] * 8)
-                    if len(readings) == 24:
-                        readings.extend([('', '')])
-                    if len(readings) == 93:
-                        readings.extend([('', '')] * 2)
-                    csvOut.write('%s,%s,%s,%s\n' % (agreement,
-                                                    start,
-                                                    ','.join([x[0] for x in readings]),
-                                                    ','.join([x[1] for x in readings])))
-                    #print '%s,%s,%s,%s' % (agreement,
-                    #                       start,
-                    #                       ','.join([x[0] for x in readings]),
-                    #                       ','.join([x[1] for x in readings]))
+                agreements = account.findall('./uti:ElectricityInterval_AgreementIdentifier', ns)
+                if len(agreements) > 0:
+                    agreement = account.find('./uti:ElectricityInterval_AgreementIdentifier', ns).text
+                    print 'Agreement: %s' % agreement
+                    print '%s days of data' % len(days)
+                    for day in days:
+                        nobs = day.find('./uti:IntervalReadingLength_IntervalLength', ns).text
+                        start = day.find('./uti:IntervalBlockDay_StartTime', ns).text
+                        obs = day.findall('.//uti:IntervalReadings', ns)
+    
+                        readings = [getUsage(ob, ns) for ob in obs]
+                        if len(readings) == 96:
+                            readings.extend([('', '')] * 4)
+                        if len(readings) == 92:
+                            readings.extend([('', '')] * 8)
+                        if len(readings) == 24:
+                            readings.extend([('', '')])
+                        if len(readings) == 93:
+                            readings.extend([('', '')] * 2)
+                        csvOut.write('%s,%s,%s,%s\n' % (agreement,
+                                                        start,
+                                                        ','.join([x[0] for x in readings]),
+                                                        ','.join([x[1] for x in readings])))
+                        #print '%s,%s,%s,%s' % (agreement,
+                        #                       start,
+                        #                       ','.join([x[0] for x in readings]),
+                        #                       ','.join([x[1] for x in readings]))
     try:
         if os.path.exists(csvFile): os.remove(csvFile)
         os.rename(tmpFile,csvFile)
@@ -174,8 +176,8 @@ def intervalsToCSV(dataDoc, csvFile):
 
 if __name__ == '__main__':
     skipExisting = True
-    path = 'sample_data'  # relative path to data directory
-    output_path = 'csv'   # relative path to output directory
+    path = '/Volumes/LaCie 1/prop39/IOU_Data/PGE'  # relative path to data directory
+    output_path = '/Volumes/LaCie 1/prop39/PGE_csv'   # relative path to output directory
     if len(sys.argv) > 1: # allow for command line override of path
         path = sys.argv[1]
     if len(sys.argv) > 2: # allow for command line override of output path
