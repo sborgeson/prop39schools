@@ -143,7 +143,7 @@ def intervalsToCSV(dataDoc, csvFile):
                 agreements = account.findall('./uti:ElectricityInterval_AgreementIdentifier', ns)
                 if len(agreements) > 0:
                     agreement = account.find('./uti:ElectricityInterval_AgreementIdentifier', ns).text
-                    print 'Agreement: %s' % agreement
+                    print 'Agreement: %s; CDS code: %s' % (agreement, cds_code)
                     print '%s days of data' % len(days)
                     for day in days:
                         nobs = day.find('./uti:IntervalReadingLength_IntervalLength', ns).text
