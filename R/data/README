@@ -1,1 +1,6 @@
 Get this zip and put it in this directory: https://s3.amazonaws.com/BrianCoffey/PGE_csv_2.zip
+Unzip it.
+
+Also get this weather data: https://s3.amazonaws.com/BrianCoffey/prop39_weather_dump.csv
+
+You should be able to accomplish these tasks by running `2_pull_data.R`

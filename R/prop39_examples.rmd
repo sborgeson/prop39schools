@@ -1,0 +1,13 @@
+---
+title: "Running VISDOM with Prop 39 Data"
+author: "Sam Borgeson"
+date: "August 21, 2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Prop 39
+
